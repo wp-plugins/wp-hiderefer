@@ -60,10 +60,13 @@ class HideRefer {
 	function is_protected($link){
 		foreach($this->_protected as $url){
 			if(stripos($link, $url) === 0){
-				return false;
+				return false; //DROP
 			}
 		}
-		return true;
+		return true;//KEEP
+	}
+	function is_absolute($link){
+		return (stripos($link, 'http') === 0); 
 	}
 	function prefix(&$item, $key){
 		$item = $this->_serviceURL.$item;
@@ -78,15 +81,18 @@ class HideRefer {
 		$dom = new DOMDocument;
 		$dom->loadHTML($content);
 		$xpath = new DOMXPath($dom);
-		$nodes = $xpath->query('//a/@href');		
+		$nodes = $xpath->query('//a/@href');
 		foreach($nodes as $href) {		
-			$links[] = $href->nodeValue;
+			$occurences[] = $href->nodeValue;
 		}
-		unset($nodes);		unset($xpath);		unset($dom);		
-		$links = array_filter(array_unique($links), array($this, 'is_protected'));					
-		$proxied_links = $links;
-		array_walk($proxied_links, array($this, 'prefix'));		
-		return str_ireplace($links, $proxied_links, $content);				
+		unset($nodes);		unset($xpath);		unset($dom);
+		$occurences = array_unique($occurences);
+		$occurences = array_filter($occurences, array($this, 'is_absolute'));
+		$occurences = array_filter($occurences, array($this, 'is_protected'));							
+		$replacements = $occurences;
+		array_walk($replacements, array($this, 'prefix'));		
+		$content = str_ireplace($occurences, $replacements, $content);		
+		return $content;
 	}	
 	
 	/*admin panel stuffs, many thanks to
@@ -103,10 +109,7 @@ class HideRefer {
 		);		
 		add_settings_field(
 			'whitelist', // ID used to identify the field throughout the theme
-			'<h3><label for="whitelist">'.__('White List:', 'HideRefer').'</label></h3><p>'.
-				__('Add URLs that should <strong>not</strong> be proxied, separated by comma or newline.<br /><br />
-					The URLs must start with "http", but is <strong>not</strong> case sensitive.<br /><br />
-					Example; <code>'.get_option('home').'/</code>', 'HideRefer').'</p>', // The label to the left of the option interface element
+			'<h3><label for="whitelist">'.__('White List:', 'HideRefer').'</label></h3><p>'.__('Add URLs that should <strong>not</strong> be proxied, separated by comma or newline.<br /><br />The URLs must start with "http", but is <strong>not</strong> case sensitive.', 'HideRefer').'</p>', // The label to the left of the option interface element
 			array($this, 'whitelist_option_cb'),	// The name of the function responsible for rendering the option interface
 			'hiderefer-settings-group',	// The page on which this option will be displayed
 			'general_section',	// The name of the section to which this field belongs
