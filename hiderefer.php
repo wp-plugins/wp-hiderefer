@@ -3,7 +3,7 @@
 Plugin Name: WP-HideRefer
 Plugin URI: http://wordpress.org/extend/plugins/wp-hiderefer/
 Description: WP-HideRefer adds proxies to your outgoing links, keeping your site private! 
-Version: 1.1
+Version: 1.11
 Author: Ulf Benjaminsson
 Author URI: http://www.ulfben.com
 Author Email: ulf@ulfben.com
@@ -78,7 +78,9 @@ class HideRefer {
 		$opts = get_option('HideReferOpts');		
 		$this->_protected = $opts['whitelist']; //make sure the member is populated
 		$this->_serviceURL = $opts['service'];		
+		$use_errors = libxml_use_internal_errors(true);
 		$dom = new DOMDocument;
+		$dom->strictErrorChecking = FALSE;
 		$dom->loadHTML($content);
 		$xpath = new DOMXPath($dom);
 		$nodes = $xpath->query('//a/@href');
@@ -86,6 +88,8 @@ class HideRefer {
 			$occurences[] = $href->nodeValue;
 		}
 		unset($nodes);		unset($xpath);		unset($dom);
+		libxml_clear_errors();
+		libxml_use_internal_errors($use_errors);
 		$occurences = array_unique($occurences);
 		$occurences = array_filter($occurences, array($this, 'is_absolute'));
 		$occurences = array_filter($occurences, array($this, 'is_protected'));							

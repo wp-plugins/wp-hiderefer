@@ -4,7 +4,7 @@ Donate link: http://www.amazon.com/gp/registry/wishlist/2QB6SQ5XX2U0N/105-320918
 Tags: anonymise, anonymize, blank referrer, hide referrer, mask, privacy, referral, hiderefer, referer, private
 Requires at least: 3.3.2
 Tested up to: 3.3.2
-Stable tag: 1.1
+Stable tag: 1.11
 License: GPLv2 or later
 
 WP-HideRefer adds proxies to your outgoing links, keeping your site private! 
@@ -31,15 +31,21 @@ If you value [my plugins](http://profiles.wordpress.org/users/ulfben/), please h
 
 == Changelog ==
 
+= 1.11 =
+Don't display warnings to end user when HTML is poorly formated.
+
 = 1.1 =
-... don't proxy relative links, silly. :)
+Handle relative links correctly (ergo; don't proxy internal links)
 
 = 1.0 =
 Public release.
 
 == Upgrade Notice ==
 
-= 1.2 = 
+= 1.11 = 
+Update to avoid displaying warnings over poorly formated HTML.
+
+= 1.1 = 
 Update to handle internal (relative) links correctly.
 
 = 1.0 =
